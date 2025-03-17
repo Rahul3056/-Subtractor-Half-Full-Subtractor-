@@ -1,0 +1,44 @@
+
+```verilog
+// Half Subtractor Module
+module half_subtractor (
+    input wire A, B,
+    output wire Difference, Borrow
+);
+    assign Difference = A ^ B;    // XOR for Difference
+    assign Borrow = ~A & B;      // AND + NOT for Borrow
+endmodule
+
+// Full Subtractor Module
+module full_subtractor (
+    input wire A, B, Bin,
+    output wire Difference, Borrow
+);
+    assign Difference = A ^ B ^ Bin;  // XOR for Difference
+    assign Borrow = (~A & B) | (~A & Bin) | (B & Bin); // Borrow Logic
+endmodule
+
+// Testbench
+module testbench;
+    reg A, B, Bin;
+    wire Diff_HS, Borrow_HS;
+    wire Diff_FS, Borrow_FS;
+
+    half_subtractor HS (.A(A), .B(B), .Difference(Diff_HS), .Borrow(Borrow_HS));
+    full_subtractor FS (.A(A), .B(B), .Bin(Bin), .Difference(Diff_FS), .Borrow(Borrow_FS));
+
+    initial begin
+        $monitor("A=%b B=%b Bin=%b | HS: Diff=%b Borrow=%b | FS: Diff=%b Borrow=%b", 
+                 A, B, Bin, Diff_HS, Borrow_HS, Diff_FS, Borrow_FS);
+
+        // Test cases
+        A = 0; B = 0; Bin = 0; #10;
+        A = 0; B = 1; Bin = 0; #10;
+        A = 1; B = 0; Bin = 1; #10;
+        A = 1; B = 1; Bin = 1; #10;
+        
+        $finish;
+    end
+endmodule
+```
+
